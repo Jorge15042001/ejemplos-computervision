@@ -37,7 +37,7 @@ CFLAGS+=$(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config gobject-introspect
 all: demo
 
 demo:  demo.c
-	$(CC) -ltcam-property -g -DGST_DISABLE_DEPRECATED -Wall -Wextra -O0 $(CFLAGS) -o $@ demo.c $(LIBS)
+	$(CC) -g -DGST_DISABLE_DEPRECATED -Wall -Wextra -O0 $(CFLAGS) -o $@ demo.c $(LIBS)
 clean:
 	$(RM) *.o
 	$(RM) demo
