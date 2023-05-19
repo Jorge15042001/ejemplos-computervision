@@ -6,16 +6,34 @@ import cv2
 
 cam = cv2.VideoCapture(0)
 
+# set the resolution of the camera
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+# enbale/disable automatic exposure
+# 1 -> disable
+# 3 -> enbale
+cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+# set exposure time
+cam.set(cv2.CAP_PROP_EXPOSURE, 400)
+
+# set capture format to MJPG, MJPG is a compressed image format
+
+cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+
 # create a window and name it 
 cv2.namedWindow("opencv demo")
 
 # number of saved frames
 img_counter = 0
+frame_conter = 0
 
 print("press 'p' to save a frame, 'q' to exit")
 
 # main loop to get frames
 while cam.isOpened():
+    if frame_conter % 100 == 0:
+        cam.set(cv2.CAP_PROP_EXPOSURE, cam.get(cv2.CAP_PROP_EXPOSURE))
+
     # get one frame from the camera
     success, frame = cam.read()
 
@@ -33,6 +51,7 @@ while cam.isOpened():
     k = cv2.waitKey(1)
     # convert to char
     k_char = chr(k%256)
+
 
     if k_char == 'q': # exit main loop
         print("Escape hit, closing...")
