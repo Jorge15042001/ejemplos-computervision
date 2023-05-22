@@ -133,7 +133,7 @@ int main(int argc, char **argv)
     TcamCamera cam(serialnumber);
     
     // Set video format, resolution and frame rate
-    cam.set_capture_format("BGRx", FrameSize{640,480}, FrameRate{60,1});
+    cam.set_capture_format("BGRx", FrameSize{2592,1944}, FrameRate{15,2});
 
     // Comment following line, if no live video display is wanted.
     GstElement *xi = gst_element_factory_make("ximagesink", NULL);
