@@ -5,6 +5,8 @@ import cv2
 # on Windows 0-> first camera 1-> second camera 3-> third camera ...
 
 cam = cv2.VideoCapture(0)
+# set buffer  size to 1 frame
+cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 # set the resolution of the camera
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -14,7 +16,7 @@ cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 # 3 -> enbale
 cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
 # set exposure time
-cam.set(cv2.CAP_PROP_EXPOSURE, 400)
+cam.set(cv2.CAP_PROP_EXPOSURE, 100)
 
 # set capture format to MJPG, MJPG is a compressed image format
 
@@ -25,15 +27,11 @@ cv2.namedWindow("opencv demo")
 
 # number of saved frames
 img_counter = 0
-frame_conter = 0
 
 print("press 'p' to save a frame, 'q' to exit")
 
 # main loop to get frames
 while cam.isOpened():
-    if frame_conter % 100 == 0:
-        cam.set(cv2.CAP_PROP_EXPOSURE, cam.get(cv2.CAP_PROP_EXPOSURE))
-
     # get one frame from the camera
     success, frame = cam.read()
 
