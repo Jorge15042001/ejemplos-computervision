@@ -113,7 +113,8 @@ int main(int argc, char **argv)
 
     // Query the serial number of the first found device. 
     // will return an emtpy string, if no device was found.
-    std::string serialnumber = TcamCamera::getFirstDeviceSerialNumber();
+    // std::string serialnumber = TcamCamera::getFirstDeviceSerialNumber();
+    std::string serialnumber = "15710238";
     printf("Tcam OpenCV Image Sample\n");
     
     if( serialnumber != "")

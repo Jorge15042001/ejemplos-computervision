@@ -4,13 +4,13 @@ import cv2
 # on Linux 0-> first camera 2-> second camera 4-> third camera ...
 # on Windows 0-> first camera 1-> second camera 3-> third camera ...
 
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(2)
 # set buffer  size to 1 frame
 cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 # set the resolution of the camera
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 2592)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1944)
 # enbale/disable automatic exposure
 # 1 -> disable
 # 3 -> enbale
@@ -20,7 +20,7 @@ cam.set(cv2.CAP_PROP_EXPOSURE, 100)
 
 # set capture format to MJPG, MJPG is a compressed image format
 
-cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+#  cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
 
 # create a window and name it 
 cv2.namedWindow("opencv demo")

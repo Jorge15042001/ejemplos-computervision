@@ -32,17 +32,18 @@ struct buffer {
   size_t length;
 };
 
-static void xioctl(int fh, int request, void *arg) {
+static int xioctl(int fh, int request, void *arg) {
   int r;
-
   do {
     r = v4l2_ioctl(fh, request, arg);
   } while (r == -1 && ((errno == EINTR) || (errno == EAGAIN)));
 
   if (r == -1) {
-    fprintf(stderr, "error %d, %s\\n", errno, strerror(errno));
-    exit(EXIT_FAILURE);
+    fprintf(stderr, "error %d, %s\n", errno, strerror(errno));
+    /** exit(EXIT_FAILURE); */
+    return 0;
   }
+  return 1;
 }
 
 int main(int argc, char **argv) {
@@ -66,8 +67,8 @@ int main(int argc, char **argv) {
   CLEAR(fmt);//clear the format buffer
   // setting capture options
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 2592;
-  fmt.fmt.pix.height = 1944;
+  fmt.fmt.pix.width = 1920;
+  fmt.fmt.pix.height = 1080;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
@@ -137,6 +138,13 @@ int main(int argc, char **argv) {
   xioctl(camera_fd, VIDIOC_STREAMON, &type);
   // capture 20 images
   for (unsigned int i = 0; i < 20; i++) {
+    struct v4l2_control control;
+    control.id = V4L2_CID_EXPOSURE;
+    control.value = 300;
+    const int success = xioctl(camera_fd, VIDIOC_S_CTRL,&control); 
+    if (success == 0){
+      printf("Failed to set expousure\n");
+    }
     do {
       FD_ZERO(&fds);
       FD_SET(camera_fd, &fds);
@@ -171,7 +179,7 @@ int main(int argc, char **argv) {
       exit(EXIT_FAILURE);
     }
     //write image header
-    fprintf(fout, "P6 %d %d 255\\n", fmt.fmt.pix.width, fmt.fmt.pix.height);
+    fprintf(fout, "P6 %d %d 255 ", fmt.fmt.pix.width, fmt.fmt.pix.height);
     //write image content
     fwrite(buffers[buf.index].start, buf.bytesused, 1, fout);
     //close the file
