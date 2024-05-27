@@ -16,6 +16,7 @@ pip install opencv-python
 python3 main.py 
 ```
 
+    Dar click en la pantalla de visualizacion luego oprimir la tecla 'p' para guardar una imagen y la 'q' para terminar el programa
     Las imágenes capturadas estarán guardadas en la carpeta images 
 
 ## Ejecutar (modo captura)
