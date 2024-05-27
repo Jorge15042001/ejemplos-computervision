@@ -1,4 +1,4 @@
-# Captura de imagenes usand UVC  
+# Captura de imagenes usando UVC  
 
 ## Requerimientos  
 
