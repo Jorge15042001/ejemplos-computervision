@@ -14,6 +14,12 @@ apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreame
 sudo apt-get install build-essential cmake 
 ```
 
+## Compilar
+
+```bash
+make
+```
+
 ## Ejecutar (modo visualizador)
 
 ```bash

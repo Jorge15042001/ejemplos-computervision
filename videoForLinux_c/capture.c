@@ -47,6 +47,16 @@ static int xioctl(int fh, int request, void *arg) {
 }
 
 int main(int argc, char **argv) {
+  if (argc!=2){
+    fprintf(stderr,"Invalid numer of arguments only 2 arguments allowed");
+    return 1;
+  }
+  const int n_frames = atoi(argv[1]);
+  if (n_frames<=0){
+    fprintf(stderr,"second argument must a positive number");
+    return 1;
+  }
+  
   const char *const dev_name = "/dev/video0";//cameta path
   enum v4l2_buf_type type;
   fd_set fds;
@@ -67,8 +77,8 @@ int main(int argc, char **argv) {
   CLEAR(fmt);//clear the format buffer
   // setting capture options
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 1920;
-  fmt.fmt.pix.height = 1080;
+  fmt.fmt.pix.width = 640;
+  fmt.fmt.pix.height = 480;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
@@ -83,7 +93,7 @@ int main(int argc, char **argv) {
   }
 
   // check if the cammera accepted the specified resolution
-  if ((fmt.fmt.pix.width != 2592) || (fmt.fmt.pix.height != 1944))
+  if ((fmt.fmt.pix.width != 640) || (fmt.fmt.pix.height != 480))
     printf("Warning: driver is sending image at %dx%d\\n", fmt.fmt.pix.width,
            fmt.fmt.pix.height);
 
@@ -136,8 +146,8 @@ int main(int argc, char **argv) {
 
   //start stream
   xioctl(camera_fd, VIDIOC_STREAMON, &type);
-  // capture 20 images
-  for (unsigned int i = 0; i < 20; i++) {
+  // capture n_frames images
+  for (unsigned int i = 0; i < n_frames; i++) {
     struct v4l2_control control;
     control.id = V4L2_CID_EXPOSURE;
     control.value = 300;
