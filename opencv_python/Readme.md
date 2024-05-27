@@ -1,4 +1,4 @@
-# Captura de imagenes usando UVC  
+# Captura de imagenes usando opencv-python
 
 ## Requerimientos  
 
