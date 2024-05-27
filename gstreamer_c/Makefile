@@ -38,6 +38,8 @@ all: demo
 
 demo:  demo.c
 	$(CC) -g -DGST_DISABLE_DEPRECATED -Wall -Wextra -O0 $(CFLAGS) -o $@ demo.c $(LIBS)
+	mkdir -p images
 clean:
 	$(RM) *.o
+	rm -rf images/
 	$(RM) demo

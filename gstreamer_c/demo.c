@@ -27,6 +27,9 @@
 #include <string.h>
 #include <unistd.h>
 
+
+
+static int save_image = 0;
 /*
   This function will be called in a separate thread when our appsink
   says there is data for us. user_data has to be defined
@@ -46,7 +49,8 @@ static GstFlowReturn callback(GstElement *sink,
     // we have a valid sample
     // do things with the image here
     static guint framecount = 0;
-    int pixel_data = -1;
+    static guint saved_frames= 0;
+    /** int pixel_data = -1; */
 
     GstBuffer *buffer = gst_sample_get_buffer(sample);
     GstMapInfo info; // contains the actual image
@@ -57,6 +61,7 @@ static GstFlowReturn callback(GstElement *sink,
         g_warning("Failed to parse video info");
         return GST_FLOW_ERROR;
       }
+
 
       // pointer to the image data
 
@@ -79,14 +84,26 @@ static GstFlowReturn callback(GstElement *sink,
 
       // pixel_data = info.data[pixel_offset];
 
+      if(save_image == 1){
+        char filename [100];
+        sprintf(filename,"images/%03d.jpg",saved_frames); 
+
+        FILE* image_file = fopen(filename, "wb") ;
+        fwrite(info.data, 1, info.size, image_file);
+        fclose(image_file);
+        save_image = 0;
+        saved_frames ++;
+        printf("Image saved! at %s\n", filename);
+      }
+
       gst_buffer_unmap(buffer, &info);
       gst_video_info_free(video_info);
     }
 
-    GstClockTime timestamp = GST_BUFFER_PTS(buffer);
-    g_print("Captured frame %d, Pixel Value=%03d Timestamp=%" GST_TIME_FORMAT
-            "            \r",
-            framecount, pixel_data, GST_TIME_ARGS(timestamp));
+    /** GstClockTime timestamp = GST_BUFFER_PTS(buffer); */
+    /** g_print("Captured frame %d, Pixel Value=%03d Timestamp=%" GST_TIME_FORMAT */
+    /**         "            \r", */
+    /**         framecount, pixel_data, GST_TIME_ARGS(timestamp)); */
     framecount++;
 
     // delete our reference so that gstreamer can handle the sample
@@ -104,17 +121,37 @@ int main(int argc, char *argv[]) {
      https://gstreamer.freedesktop.org/documentation/tutorials/basic/debugging-tools.html
      for further details
   */
+  int n_frames = -1;
+  if (argc == 2){
+    const int frames= atoi(argv[1]);
+    if (frames<= 0){
+      fprintf(stderr,"El segundo argumento deber ser un numero entero positivo") ;
+      return 1;
+    }
+    n_frames = frames;
+  }
+  else if (argc >2) {
+      fprintf(stderr,"Maximo 2 argumentos permitidos") ;
+      return 1;
+  }
   gst_debug_set_default_threshold(GST_LEVEL_WARNING);
 
   gst_init(&argc, &argv);
 
   const char *serial = NULL; // the serial number of the camera we want to use
 
-  const char *pipeline_str =
-      "v4l2src  device=/dev/video2  ! "
-      "video/x-raw,format=YUY2,width=1280,height=720,framerate=10/1 ! "
-      "tee name=t ! queue ! videoconvert !  appsink name=sink t. !  queue "
+  char *pipeline_str =
+      "v4l2src  device=/dev/video0  ! "
+      "video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! "
+      "tee name=t ! queue ! videoconvert ! jpegenc !  appsink name=sink t. !  queue "
       "!videoconvert ! autovideosink";
+  if(n_frames > 0){
+      pipeline_str =
+      "v4l2src  device=/dev/video0  ! "
+      "video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! "
+      "queue ! videoconvert ! jpegenc !  appsink name=sink ";
+  }
+
 
   GError *err = NULL;
   GstElement *pipeline = gst_parse_launch(pipeline_str, &err);
@@ -149,9 +186,20 @@ int main(int argc, char *argv[]) {
 
   gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
-  g_print("Press 'enter' to stop the stream.\n");
-  /* wait for user input to end the program */
-  getchar();
+  // wait for a second while the pipeline stars
+  sleep(1);
+  if (n_frames == -1){
+    g_print("Press 'enter' to stop the stream.\n");
+    /* wait for user input to end the program */
+    getchar();
+  }
+  else{
+    for (int i = 0; i<n_frames;i++){
+      usleep(100000);
+      save_image = 1;
+      usleep(100000);
+    }
+  }
 
   // this stops the pipeline and frees all resources
   gst_element_set_state(pipeline, GST_STATE_NULL);
