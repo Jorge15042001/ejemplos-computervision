@@ -36,14 +36,14 @@ cam = cv2.VideoCapture(0)
 cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 # set the resolution of the camera
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH,  480)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640)
 # enbale/disable automatic exposure
 # 1 -> disable
 # 3 -> enbale
 cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)
 # set exposure time
-cam.set(cv2.CAP_PROP_EXPOSURE, 1000)
+#  cam.set(cv2.CAP_PROP_EXPOSURE, 1000)
 
 # set capture format to MJPG, MJPG is a compressed image format
 
